@@ -1,77 +1,75 @@
 package ru.practicum.shareit.user.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailAlreadyExistsException;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.User;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-/**
- * Реализация сервиса пользователя.
- */
 @Service
 public class UserServiceImpl implements UserService {
-    private final Map<Long, User> users = new HashMap<>();
-    private final AtomicLong userIdSequence = new AtomicLong(0);
+    private final UserRepository userRepository;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDto addUser(UserDto userDto) {
-        validateEmail(userDto.getEmail());
+        if (userRepository.existsByEmail(userDto.getEmail())) {
+            throw new EmailAlreadyExistsException("Email already exists");
+        }
         User user = UserMapper.toUser(userDto);
-        user.setId(userIdSequence.incrementAndGet());
-        users.put(user.getId(), user);
-        return UserMapper.toUserDto(user);
+        User savedUser = userRepository.save(user);
+        return UserMapper.toUserDto(savedUser);
     }
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
-        User user = users.get(userId);
-        if (user == null) {
-            throw new NoSuchElementException("User not found");
-        }
+        User user = getUserEntityById(userId);
+
         if (userDto.getEmail() != null && !userDto.getEmail().equalsIgnoreCase(user.getEmail())) {
-            validateEmail(userDto.getEmail());
+            if (userRepository.existsByEmail(userDto.getEmail())) {
+                throw new EmailAlreadyExistsException("Email already exists");
+            }
             user.setEmail(userDto.getEmail());
         }
-        if (userDto.getName() != null && !userDto.getName().isBlank()) {
+        if (userDto.getName() != null) {
             user.setName(userDto.getName());
         }
-        return UserMapper.toUserDto(user);
+
+        User updatedUser = userRepository.save(user);
+        return UserMapper.toUserDto(updatedUser);
     }
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = users.get(userId);
-        if (user == null) {
-            throw new NoSuchElementException("User not found");
-        }
+        User user = getUserEntityById(userId);
         return UserMapper.toUserDto(user);
+    }
+
+    public User getUserEntityById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        return users.values()
-                .stream()
+        List<User> users = userRepository.findAll();
+        return users.stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void deleteUser(Long userId) {
-        users.remove(userId);
-    }
-
-    private void validateEmail(String email) {
-        // Проверка на дубликат email
-        boolean emailExists = users.values()
-                .stream()
-                .anyMatch(user -> user.getEmail().equalsIgnoreCase(email));
-        if (emailExists) {
-            throw new EmailAlreadyExistsException("Email already exists");
-        }
+        userRepository.deleteById(userId);
     }
 }

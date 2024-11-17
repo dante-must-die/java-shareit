@@ -47,6 +47,12 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
         return new ErrorResponse("Validation error", errorMessage);
     }
+
+    @ExceptionHandler(InvalidCommentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // 400 Bad Request
+    public @ResponseBody ErrorResponse handleInvalidCommentException(InvalidCommentException ex) {
+        return new ErrorResponse("Bad request", ex.getMessage());
+    }
 }
 
 
