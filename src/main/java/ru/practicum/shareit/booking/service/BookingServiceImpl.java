@@ -8,6 +8,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.exception.AccessDeniedException;
+import ru.practicum.shareit.exception.ItemNotAvailableException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.service.UserServiceImpl;
@@ -38,7 +39,7 @@ public class BookingServiceImpl implements BookingService {
 
         Item item = itemService.getItemEntityById(bookingDto.getItemId());
         if (!item.getAvailable()) {
-            throw new IllegalArgumentException("Item is not available for booking");
+            throw new ItemNotAvailableException("Item is not available for booking");
         }
 
         if (item.getOwner().getId().equals(userId)) {
