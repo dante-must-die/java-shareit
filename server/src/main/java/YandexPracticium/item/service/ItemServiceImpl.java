@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = findById(itemId);
         ItemDto itemDto = ItemMapper.toItemDto(item);
 
-        // Добавляем комментарии
+        // Добавляем комменты
         List<Comment> comments = commentRepository.findByItemId(itemId);
         itemDto.setComments(comments.stream()
                 .map(CommentMapper::toCommentDto)
