@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public @ResponseBody ErrorResponse handleValidationException(final ValidationException e) {
-        return new ErrorResponse("Bad request",e.getMessage());
+        return new ErrorResponse("Bad request", e.getMessage());
     }
 }
 
