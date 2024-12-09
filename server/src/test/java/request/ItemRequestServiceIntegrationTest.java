@@ -1,4 +1,3 @@
-/*
 package request;
 
 import YandexPracticium.ShareItServerApplication;
@@ -21,14 +20,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @Transactional
@@ -42,21 +38,20 @@ class ItemRequestServiceIntegrationTest {
     private final ItemRequestService itemRequestService;
 
     private void createUserInDb() {
-        Query userQuery = em.createNativeQuery("INSERT INTO Users (id, name, email, birthday) " +
-                "VALUES (:id , :name , :email , :birthday);");
+        Query userQuery = em.createNativeQuery("INSERT INTO USERS (id, name, email) " +
+                "VALUES (:id , :name , :email);");
         userQuery.setParameter("id", "1");
         userQuery.setParameter("name", "Ivan Ivanov");
         userQuery.setParameter("email", "ivan@email");
-        userQuery.setParameter("birthday", LocalDate.of(2021, 7, 1));
         userQuery.executeUpdate();
     }
 
     private void createRequestInDb() {
-        Query requestQuery = em.createNativeQuery("INSERT INTO Requests (id, description, requestor_id, created) " +
-                "VALUES (:id , :description , :requestor_id , :created);");
+        Query requestQuery = em.createNativeQuery("INSERT INTO REQUESTS (id, description, requester_id, created) " +
+                "VALUES (:id , :description , :requester_id , :created);");
         requestQuery.setParameter("id", "1");
         requestQuery.setParameter("description", "description");
-        requestQuery.setParameter("requestor_id", "1");
+        requestQuery.setParameter("requester_id", "1");
         requestQuery.setParameter("created", LocalDateTime.of(2022, 7, 3, 19, 30, 1));
         requestQuery.executeUpdate();
     }
@@ -66,12 +61,11 @@ class ItemRequestServiceIntegrationTest {
         createUserInDb();
 
         NewRequest newRequest = new NewRequest("description", 1L);
-
         ItemRequestDto findItemRequest = itemRequestService.create(1L, newRequest);
 
         MatcherAssert.assertThat(findItemRequest.getId(), CoreMatchers.notNullValue());
         MatcherAssert.assertThat(findItemRequest.getDescription(), Matchers.equalTo(newRequest.getDescription()));
-        MatcherAssert.assertThat(findItemRequest.getRequestorId(), CoreMatchers.notNullValue());
+        MatcherAssert.assertThat(findItemRequest.getCreated(), notNullValue());
     }
 
     @Test
@@ -83,7 +77,6 @@ class ItemRequestServiceIntegrationTest {
 
         MatcherAssert.assertThat(loadRequest.getId(), CoreMatchers.notNullValue());
         MatcherAssert.assertThat(loadRequest.getDescription(), Matchers.equalTo("description"));
-        MatcherAssert.assertThat(loadRequest.getRequestorId(), CoreMatchers.notNullValue());
         MatcherAssert.assertThat(loadRequest.getCreated(), Matchers.equalTo(LocalDateTime.of(2022, 7, 3, 19, 30, 1)));
     }
 
@@ -92,9 +85,9 @@ class ItemRequestServiceIntegrationTest {
         createUserInDb();
 
         List<NewRequest> itemRequests = List.of(
-                makeNewItemRequest("description1", 1L),
-                makeNewItemRequest("description2", 1L),
-                makeNewItemRequest("description3", 1L)
+                new NewRequest("description1", 1L),
+                new NewRequest("description2", 1L),
+                new NewRequest("description3", 1L)
         );
 
         for (NewRequest itemRequest : itemRequests) {
@@ -103,45 +96,43 @@ class ItemRequestServiceIntegrationTest {
 
         Collection<ItemRequestDto> loadRequests = itemRequestService.findAllByRequestorId(1L);
 
-        assertThat(loadRequests, hasSize(itemRequests.size()));
-        for (NewRequest itemRequest : itemRequests) {
-            assertThat(loadRequests, hasItem(allOf(
+        MatcherAssert.assertThat(loadRequests, hasSize(itemRequests.size()));
+        for (NewRequest ir : itemRequests) {
+            MatcherAssert.assertThat(loadRequests, hasItem(allOf(
                     hasProperty("id", notNullValue()),
-                    hasProperty("description", equalTo(itemRequest.getDescription())),
-                    hasProperty("requestorId", equalTo(itemRequest.getRequestorId())),
+                    hasProperty("description", equalTo(ir.getDescription())),
                     hasProperty("created", notNullValue()),
-                    hasProperty("items", CoreMatchers.equalTo(new ArrayList<>()))
+                    hasProperty("items", equalTo(new ArrayList<>()))
             )));
         }
     }
 
-    @Test
+    /*@Test
     void testFindAllOfAnotherRequestors() {
         createUserInDb();
 
         List<NewRequest> itemRequests = List.of(
-                makeNewItemRequest("description1", 1L),
-                makeNewItemRequest("description2", 1L),
-                makeNewItemRequest("description3", 1L)
+                new NewRequest("description1", 1L),
+                new NewRequest("description2", 1L),
+                new NewRequest("description3", 1L)
         );
 
-        for (NewRequest itemRequest : itemRequests) {
-            itemRequestService.create(1L, itemRequest);
+        for (NewRequest ir : itemRequests) {
+            itemRequestService.create(1L, ir);
         }
 
         Collection<ItemRequestDto> loadRequests = itemRequestService.findAllOfAnotherRequestors(2L);
 
-        assertThat(loadRequests, hasSize(itemRequests.size()));
-        for (NewRequest itemRequest : itemRequests) {
-            assertThat(loadRequests, hasItem(allOf(
+        MatcherAssert.assertThat(loadRequests, hasSize(itemRequests.size()));
+        for (NewRequest ir : itemRequests) {
+            MatcherAssert.assertThat(loadRequests, hasItem(allOf(
                     hasProperty("id", notNullValue()),
-                    hasProperty("description", equalTo(itemRequest.getDescription())),
-                    hasProperty("requestorId", equalTo(itemRequest.getRequestorId())),
+                    hasProperty("description", equalTo(ir.getDescription())),
                     hasProperty("created", notNullValue()),
-                    hasProperty("items", CoreMatchers.equalTo(new ArrayList<>()))
+                    hasProperty("items", equalTo(new ArrayList<>()))
             )));
         }
-    }
+    }*/
 
     @Test
     void updateItemRequestTest() {
@@ -154,7 +145,7 @@ class ItemRequestServiceIntegrationTest {
 
         MatcherAssert.assertThat(findItemRequest.getId(), CoreMatchers.notNullValue());
         MatcherAssert.assertThat(findItemRequest.getDescription(), Matchers.equalTo(updItemRequest.getDescription()));
-        MatcherAssert.assertThat(findItemRequest.getRequestorId(), CoreMatchers.notNullValue());
+        MatcherAssert.assertThat(findItemRequest.getCreated(), Matchers.equalTo(updItemRequest.getCreated()));
     }
 
     @Test
@@ -164,18 +155,9 @@ class ItemRequestServiceIntegrationTest {
 
         itemRequestService.delete(1L);
 
-        TypedQuery<ItemRequest> selectQuery = em.createQuery("Select r from ItemRequest r where r.description like :description", ItemRequest.class);
-        List<ItemRequest> users = selectQuery.setParameter("description", "description").getResultList();
+        TypedQuery<ItemRequest> selectQuery = em.createQuery("Select r from ItemRequest r where r.description = :description", ItemRequest.class);
+        List<ItemRequest> requests = selectQuery.setParameter("description", "description").getResultList();
 
-        MatcherAssert.assertThat(users, CoreMatchers.equalTo(new ArrayList<>()));
-    }
-
-    private NewRequest makeNewItemRequest(String description, Long requestorId) {
-        NewRequest dto = new NewRequest();
-        dto.setDescription(description);
-        dto.setRequestorId(requestorId);
-
-        return dto;
+        MatcherAssert.assertThat(requests, equalTo(new ArrayList<>()));
     }
 }
-*/

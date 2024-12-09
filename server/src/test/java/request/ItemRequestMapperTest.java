@@ -1,20 +1,18 @@
-/*
 package request;
 
 import YandexPracticium.ShareItServerApplication;
 import YandexPracticium.item.Item;
+import YandexPracticium.item.dto.ItemDto;
+import YandexPracticium.item.mapper.ItemMapper;
 import YandexPracticium.request.ItemRequest;
 import YandexPracticium.request.dto.ItemRequestDto;
 import YandexPracticium.request.dto.NewRequest;
-import YandexPracticium.request.dto.ResponseDto;
 import YandexPracticium.request.dto.UpdateRequest;
 import YandexPracticium.request.mapper.ItemRequestMapper;
 import YandexPracticium.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ContextConfiguration;
 
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -26,45 +24,48 @@ import static org.hamcrest.Matchers.equalTo;
 public class ItemRequestMapperTest {
     private final LocalDateTime now = LocalDateTime.now();
 
-    private final User user = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-    private final Item item = new Item(1L, "name", "description", Boolean.TRUE, user, 1L);
-
+    private final User user = new User(1L, "user@mail.com", "UserName");
+    private final ItemRequest itemRequest = new ItemRequest(1L, "description", user, now);
     private final NewRequest newRequest = new NewRequest("description", 1L);
     private final UpdateRequest updRequest = new UpdateRequest(1L, "description", 1L, now);
-    private final ItemRequest itemRequest = new ItemRequest(1L, "description", user, now);
-
-    private final ResponseDto responseDto = new ResponseDto(1L, "name", 1L);
-    private final List<ResponseDto> items = List.of(responseDto);
-    private final ItemRequestDto dtoWithComments = new ItemRequestDto(1L, "description", 1L, now, items);
-    private final ItemRequestDto dto = new ItemRequestDto(1L, "description", 1L, now, Collections.emptyList());
 
     @Test
     public void toItemRequestDtoTest() {
-        ItemRequestDto userDto = ItemRequestMapper.mapToItemRequestDto(itemRequest);
-        assertThat(userDto, equalTo(dto));
+        ItemRequestDto dto = ItemRequestMapper.toItemRequestDto(itemRequest);
+        assertThat(dto.getId(), equalTo(1L));
+        assertThat(dto.getDescription(), equalTo("description"));
+        assertThat(dto.getCreated(), equalTo(now));
+        assertThat(dto.getItems(), equalTo(Collections.emptyList()));
     }
 
     @Test
-    public void toItemRequestDtoWithResponseDtoTest() {
-        ItemRequestDto userDto = ItemRequestMapper.mapToItemRequestDto(itemRequest, List.of(item));
-        assertThat(userDto, equalTo(dtoWithComments));
+    public void toItemRequestDtoWithItemsTest() {
+        User owner = new User(2L, "owner@mail.com", "OwnerName");
+        Item item = new Item(10L, "itemName", "itemDesc", true, owner, itemRequest);
+        List<ItemDto> itemDtos = List.of(ItemMapper.toItemDto(item));
+
+        ItemRequestDto dto = ItemRequestMapper.toItemRequestDto(itemRequest, itemDtos);
+        assertThat(dto.getId(), equalTo(1L));
+        assertThat(dto.getDescription(), equalTo("description"));
+        assertThat(dto.getCreated(), equalTo(now));
+        assertThat(dto.getItems().size(), equalTo(1));
+        assertThat(dto.getItems().get(0).getName(), equalTo("itemName"));
     }
 
     @Test
-    public void toItemRequest() {
-        ItemRequest ir = ItemRequestMapper.mapToItemRequest(newRequest, user, now);
-        assertThat(ir.getDescription(), equalTo(itemRequest.getDescription()));
-        assertThat(ir.getCreated(), equalTo(itemRequest.getCreated()));
-        assertThat(ir.getRequestor(), equalTo(itemRequest.getRequestor()));
+    public void toItemRequestTest() {
+        ItemRequest ir = ItemRequestMapper.toItemRequest(newRequest, user, now);
+        assertThat(ir.getDescription(), equalTo("description"));
+        assertThat(ir.getRequester(), equalTo(user));
+        assertThat(ir.getCreated(), equalTo(now));
     }
 
     @Test
-    public void updateUserFieldsTest() {
+    public void updateItemFieldsTest() {
         ItemRequest ir = ItemRequestMapper.updateItemFields(itemRequest, updRequest, user);
         assertThat(ir.getId(), equalTo(itemRequest.getId()));
         assertThat(ir.getDescription(), equalTo(itemRequest.getDescription()));
-        assertThat(ir.getCreated(), equalTo(itemRequest.getCreated()));
-        assertThat(ir.getRequestor(), equalTo(itemRequest.getRequestor()));
+        assertThat(ir.getRequester(), equalTo(user));
+        assertThat(ir.getCreated(), equalTo(now));
     }
 }
-*/

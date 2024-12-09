@@ -1,4 +1,3 @@
-/*
 package booking;
 
 import YandexPracticium.ShareItServerApplication;
@@ -10,17 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
 import org.springframework.test.context.ContextConfiguration;
 
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ContextConfiguration(classes = ShareItServerApplication.class)
-
 @JsonTest
 public class BookingJsonTest {
     @Autowired
@@ -29,13 +24,13 @@ public class BookingJsonTest {
     @Test
     void testBookingDto() throws Exception {
         final LocalDateTime now = LocalDateTime.now();
-        final LocalDateTime nextDay = LocalDateTime.now().plusDays(1);
+        final LocalDateTime nextDay = now.plusDays(1);
 
-        final ItemDto itemDto = new ItemDto(1L, "name", "description", Boolean.TRUE, 2L, 2L);
-        final UserDto userDto = new UserDto(1L, "ivan@email", "Ivan Ivanov", LocalDate.of(2022, 7, 3));
+        final ItemDto itemDto = new ItemDto(1L, "name", "description", Boolean.TRUE, 2L);
+        final UserDto userDto = new UserDto(1L, "John Doe", "john.doe@mail.com");
         final BookingDto bookingDto = new BookingDto(1L, now, nextDay, itemDto, Statuses.CANCELED, userDto);
 
-        JsonContent<BookingDto> result = bookingJson.write(bookingDto);
+        var result = bookingJson.write(bookingDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.start").isNotBlank();
@@ -47,4 +42,3 @@ public class BookingJsonTest {
         assertThat(result).extractingJsonPathStringValue("$.booker.email").isEqualTo(userDto.getEmail());
     }
 }
-*/

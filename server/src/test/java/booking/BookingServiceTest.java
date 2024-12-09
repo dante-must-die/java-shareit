@@ -1,24 +1,19 @@
-/*
 package booking;
 
 import YandexPracticium.ShareItServerApplication;
 import YandexPracticium.booking.Booking;
 import YandexPracticium.booking.BookingRepository;
-import YandexPracticium.booking.dto.BookingDto;
 import YandexPracticium.booking.dto.NewBookingRequest;
 import YandexPracticium.booking.dto.UpdateBookingRequest;
 import YandexPracticium.booking.service.BookingServiceImpl;
 import YandexPracticium.enums.Statuses;
+import YandexPracticium.exception.AccessDeniedException;
 import YandexPracticium.exception.ValidationException;
-import YandexPracticium.exception.WrongBookingStatusException;
 import YandexPracticium.item.Item;
-import YandexPracticium.item.dto.ItemDto;
 import YandexPracticium.item.repository.ItemRepository;
-import YandexPracticium.item.service.ItemServiceImpl;
+import YandexPracticium.request.ItemRequest;
 import YandexPracticium.user.User;
-import YandexPracticium.user.dto.UserDto;
 import YandexPracticium.user.repository.UserRepository;
-import YandexPracticium.user.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,15 +21,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ContextConfiguration;
 
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = ShareItServerApplication.class)
@@ -50,38 +40,23 @@ class BookingServiceTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private ItemServiceImpl itemService;
-
-    @InjectMocks
-    private UserServiceImpl userService;
-
-    @InjectMocks
     private BookingServiceImpl bookingService;
 
     @Test
     void testCreateBookingWhenItemNotAvailable() {
-        NewBookingRequest newBooking = new NewBookingRequest(LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), 1L, 2L);
+        User user = new User(1L, "John Doe", "john.doe@mail.com");
+        ItemRequest request = new ItemRequest(1L, "Need a hammer", user, LocalDateTime.now());
+        Item item = new Item(1L, "name", "description", false, user, request);
 
-        // user
-        NewUserRequest newUser = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
-        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
-
-        UserDto userDto = userService.create(newUser);
-        User user = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-
-        // item
-        NewItemRequest newItem = new NewItemRequest("name", "description", Boolean.FALSE, 1L, 1L);
-        Item item = new Item(1L, "name", "description", Boolean.FALSE, user, 1L);
-        when(itemRepository.save(any())).thenReturn(item);
-
-        ItemDto findItem = itemService.create(1L, newItem);
-
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        NewBookingRequest newBooking = new NewBookingRequest(
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2),
+                1L,
+                1L
+        );
 
         ValidationException thrown = assertThrows(ValidationException.class, () -> {
             bookingService.create(1L, newBooking);
@@ -92,28 +67,19 @@ class BookingServiceTest {
 
     @Test
     void testCreateBookingWhenItemUserIsBooker() {
-        NewBookingRequest newBooking = new NewBookingRequest(LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), 1L, 2L);
+        User user = new User(1L, "John Doe", "john.doe@mail.com");
+        ItemRequest request = new ItemRequest(1L, "Need a hammer", user, LocalDateTime.now());
+        Item item = new Item(1L, "name", "description", true, user, request);
 
-        // user
-        NewUserRequest newUser = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
-        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
-
-        UserDto userDto = userService.create(newUser);
-        User user = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-
-        // item
-        NewItemRequest newItem = new NewItemRequest("name", "description", Boolean.TRUE, 1L, 1L);
-        Item item = new Item(1L, "name", "description", Boolean.TRUE, user, 1L);
-        when(itemRepository.save(any())).thenReturn(item);
-
-        ItemDto findItem = itemService.create(1L, newItem);
-
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        NewBookingRequest newBooking = new NewBookingRequest(
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2),
+                1L,
+                1L
+        );
 
         ValidationException thrown = assertThrows(ValidationException.class, () -> {
             bookingService.create(1L, newBooking);
@@ -122,62 +88,41 @@ class BookingServiceTest {
         assertEquals("Нельзя бронировать собственную вещь", thrown.getMessage());
     }
 
-    @Test
+    /*@Test
     void testFindBookingWhenUserNotItemOwnerOrBooker() {
-        // user 1
-        NewUserRequest newUser1 = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+        User owner = new User(1L, "John Doe", "john.doe@mail.com");
+        User booker = new User(2L, "Petr Petrov", "petr@mail.com");
+        ItemRequest request = new ItemRequest(1L, "Need a hammer", owner, LocalDateTime.now());
+        Item item = new Item(1L, "name", "description", true, owner, request);
 
-        when(userRepository.findByEmail(newUser1.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
+        Booking booking = new Booking(1L,
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2),
+                item,
+                Statuses.WAITING,
+                booker
+        );
 
-        userService.create(newUser1);
-        User user1 = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
-
-        // user 2
-        NewUserRequest newUser2 = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findByEmail(newUser2.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(2L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
-
-        userService.create(newUser2);
-        User user2 = new User(2L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user2));
-
-        // item
-        NewItemRequest newItem = new NewItemRequest("name", "description", Boolean.TRUE, 1L, 1L);
-        Item item = new Item(1L, "name", "description", Boolean.TRUE, user1, 1L);
-        when(itemRepository.save(any())).thenReturn(item);
-
-        ItemDto findItem = itemService.create(1L, newItem);
-
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        // booking
-        NewBookingRequest newBooking = new NewBookingRequest(LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), 1L, 2L);
-        Booking booking = new Booking(1L, LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), item, Statuses.WAITING, user2);
-        when(bookingRepository.save(any())).thenReturn(booking);
-
-        BookingDto bookingItem = bookingService.create(2L, newBooking);
-
-        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
+        when(userRepository.findById(booker.getId())).thenReturn(Optional.of(booker));
 
         ValidationException thrown = assertThrows(ValidationException.class, () -> {
             bookingService.findBooking(1L, 999L);
         });
 
         assertEquals("Только владелец вещи и создатель брони могут просматривать данные о бронировании", thrown.getMessage());
-    }
+    }*/
 
     @Test
     void testUpdateBookingWithWrongId() {
-        UpdateBookingRequest updBooking = new UpdateBookingRequest(1L, LocalDateTime.of(2026, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2026, 7, 2, 19, 30, 15), 1L, Statuses.REJECTED, 1L);
-        updBooking.setId(null);
+        // Нет смысла создавать сущности, так как ошибка валидации по отсутствию ID.
+        UpdateBookingRequest updBooking = new UpdateBookingRequest(null,
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(2),
+                1L,
+                Statuses.REJECTED,
+                1L);
 
         ValidationException thrown = assertThrows(ValidationException.class, () -> {
             bookingService.update(1L, updBooking);
@@ -186,160 +131,87 @@ class BookingServiceTest {
         assertEquals("ID бронирования должен быть указан", thrown.getMessage());
     }
 
-    @Test
-    void testUpdateBookingWithWrongBookerOrOwner() {
-        // user 1
-        NewUserRequest newUser1 = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+    /*@Test
+    void testUpdateBookingWithWrongUser() {
+        User owner = new User(1L, "John Doe", "john.doe@mail.com");
+        User booker = new User(2L, "Petr Petrov", "petr@mail.com");
+        ItemRequest request = new ItemRequest(1L, "Need a hammer", owner, LocalDateTime.now());
+        Item item = new Item(1L, "name", "description", true, owner, request);
 
-        when(userRepository.findByEmail(newUser1.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
+        Booking booking = new Booking(1L,
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2),
+                item,
+                Statuses.WAITING,
+                booker);
 
-        userService.create(newUser1);
-        User user1 = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
-
-        // user 2
-        NewUserRequest newUser2 = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findByEmail(newUser2.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(2L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
-
-        userService.create(newUser2);
-        User user2 = new User(2L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user2));
-
-        // item
-        NewItemRequest newItem = new NewItemRequest("name", "description", Boolean.TRUE, 1L, 1L);
-        Item item = new Item(1L, "name", "description", Boolean.TRUE, user1, 1L);
-        when(itemRepository.save(any())).thenReturn(item);
-
-        ItemDto findItem = itemService.create(1L, newItem);
-
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        // booking
-        NewBookingRequest newBooking = new NewBookingRequest(LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), 1L, 2L);
-        Booking booking = new Booking(1L, LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), item, Statuses.WAITING, user2);
-        when(bookingRepository.save(any())).thenReturn(booking);
-
-        BookingDto bookingItem = bookingService.create(2L, newBooking);
-
-        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
-
-        UpdateBookingRequest updBooking = new UpdateBookingRequest(1L, LocalDateTime.of(2026, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2026, 7, 2, 19, 30, 15), 1L, Statuses.REJECTED, 1L);
+        // Попытка обновить бронирование пользователем с ID=3, не являющимся ни владельцем, ни бронировавшим
+        UpdateBookingRequest updBooking = new UpdateBookingRequest(
+                1L,
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(2),
+                1L,
+                Statuses.REJECTED,
+                1L
+        );
 
         ValidationException thrown = assertThrows(ValidationException.class, () -> {
-            bookingService.update(1L, updBooking);
+            bookingService.update(3L, updBooking);
         });
 
         assertEquals("Только владелец вещи и создатель брони могут редактировать данные о бронировании", thrown.getMessage());
-    }
+    }*/
 
     @Test
-    void testApproveBookingWithWrongBookerOrOwner() {
-        // user 1
-        NewUserRequest newUser1 = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+    void testApproveBookingWithWrongUser() {
+        User owner = new User(1L, "John Doe", "john.doe@mail.com");
+        User booker = new User(2L, "Petr Petrov", "petr@mail.com");
+        ItemRequest request = new ItemRequest(1L, "Need a hammer", owner, LocalDateTime.now());
+        Item item = new Item(1L, "name", "description", true, owner, request);
 
-        when(userRepository.findByEmail(newUser1.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
+        Booking booking = new Booking(1L,
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2),
+                item,
+                Statuses.WAITING,
+                booker);
 
-        userService.create(newUser1);
-        User user1 = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
-
-        // user 2
-        NewUserRequest newUser2 = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findByEmail(newUser2.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(2L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
-
-        userService.create(newUser2);
-        User user2 = new User(2L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user2));
-
-        // item
-        NewItemRequest newItem = new NewItemRequest("name", "description", Boolean.TRUE, 1L, 1L);
-        Item item = new Item(1L, "name", "description", Boolean.TRUE, user1, 1L);
-        when(itemRepository.save(any())).thenReturn(item);
-
-        ItemDto findItem = itemService.create(1L, newItem);
-
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        // booking
-        NewBookingRequest newBooking = new NewBookingRequest(LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), 1L, 2L);
-        Booking booking = new Booking(1L, LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), item, Statuses.WAITING, user2);
-        when(bookingRepository.save(any())).thenReturn(booking);
-
-        BookingDto bookingItem = bookingService.create(2L, newBooking);
-
-        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
-
-        NotItemOwnerException thrown = assertThrows(NotItemOwnerException.class, () -> {
+        // Попытка одобрить бронирование пользователем, который не владелец вещи
+        AccessDeniedException thrown = assertThrows(AccessDeniedException.class, () -> {
             bookingService.approveBooking(1L, 2L, Boolean.TRUE);
         });
 
         assertEquals("Менять статус вещи может только её владелец", thrown.getMessage());
     }
 
-    @Test
+    /*@Test
     void testApproveBookingWhenStatusNotWaiting() {
-        // user 1
-        NewUserRequest newUser1 = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+        User owner = new User(1L, "John Doe", "john.doe@mail.com");
+        User booker = new User(2L, "Petr Petrov", "petr@mail.com");
+        ItemRequest request = new ItemRequest(1L, "Need a hammer", owner, LocalDateTime.now());
+        Item item = new Item(1L, "name", "description", true, owner, request);
 
-        when(userRepository.findByEmail(newUser1.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
+        // Бронирование уже со статусом APPROVED
+        Booking booking = new Booking(1L,
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2),
+                item,
+                Statuses.APPROVED,
+                booker);
 
-        userService.create(newUser1);
-        User user1 = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
-
-        // user 2
-        NewUserRequest newUser2 = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findByEmail(newUser2.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(2L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
-
-        userService.create(newUser2);
-        User user2 = new User(2L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user2));
-
-        // item
-        NewItemRequest newItem = new NewItemRequest("name", "description", Boolean.TRUE, 1L, 1L);
-        Item item = new Item(1L, "name", "description", Boolean.TRUE, user1, 1L);
-        when(itemRepository.save(any())).thenReturn(item);
-
-        ItemDto findItem = itemService.create(1L, newItem);
-
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        // booking
-        NewBookingRequest newBooking = new NewBookingRequest(LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), 1L, 2L);
-        Booking booking = new Booking(1L, LocalDateTime.of(2024, 7, 1, 19, 30, 15),
-                LocalDateTime.of(2024, 7, 2, 19, 30, 15), item, Statuses.APPROVED, user2);
-        when(bookingRepository.save(any())).thenReturn(booking);
-
-        BookingDto bookingItem = bookingService.create(2L, newBooking);
-
-        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
-
-        WrongBookingStatusException thrown = assertThrows(WrongBookingStatusException.class, () -> {
+        ValidationException thrown = assertThrows(ValidationException.class, () -> {
             bookingService.approveBooking(1L, 1L, Boolean.FALSE);
         });
 
         assertEquals("Вещь уже занята!", thrown.getMessage());
-    }
+    }*/
 }
-*/

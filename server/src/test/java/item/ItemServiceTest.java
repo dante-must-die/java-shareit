@@ -1,22 +1,24 @@
-/*
 package item;
 
 import YandexPracticium.ShareItServerApplication;
+import YandexPracticium.booking.Booking;
 import YandexPracticium.booking.BookingRepository;
-import YandexPracticium.exception.NotItemOwnerException;
+import YandexPracticium.enums.Statuses;
+import YandexPracticium.exception.AccessDeniedException;
+import YandexPracticium.exception.NotFoundException;
 import YandexPracticium.exception.ValidationException;
 import YandexPracticium.item.Item;
-import YandexPracticium.item.comment.NewCommentRequest;
-import YandexPracticium.item.dto.AdvancedItemDto;
+import YandexPracticium.item.comment.Comment;
+import YandexPracticium.item.comment.CommentDto;
+import YandexPracticium.item.comment.CommentRepository;
 import YandexPracticium.item.dto.ItemDto;
-import YandexPracticium.item.dto.NewItemRequest;
 import YandexPracticium.item.repository.ItemRepository;
 import YandexPracticium.item.service.ItemServiceImpl;
+import YandexPracticium.request.ItemRequest;
+import YandexPracticium.request.ItemRequestRepository;
 import YandexPracticium.user.User;
-import YandexPracticium.user.dto.NewUserRequest;
-import YandexPracticium.user.dto.UserDto;
 import YandexPracticium.user.repository.UserRepository;
-import YandexPracticium.user.service.UserServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,16 +26,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ContextConfiguration;
 
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = ShareItServerApplication.class)
@@ -41,125 +39,245 @@ import static org.mockito.Mockito.when;
 class ItemServiceTest {
     @Mock
     private ItemRepository itemRepository;
-
+    @Mock
+    private CommentRepository commentRepository;
     @Mock
     private BookingRepository bookingRepository;
-
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ItemRequestRepository itemRequestRepository;
 
     @InjectMocks
     private ItemServiceImpl itemService;
 
-    @InjectMocks
-    private UserServiceImpl userService;
+    private User user;
+    private User otherUser;
+    private Item item;
+    private ItemDto itemDto;
+    private ItemRequest request;
+    private Comment comment;
+    private CommentDto commentDto;
+    private Booking pastBooking;
+    private Booking futureBooking;
+
+    @BeforeEach
+    void setUp() {
+        user = new User();
+        user.setId(1L);
+        user.setName("UserName");
+        user.setEmail("user@mail.com");
+
+        otherUser = new User();
+        otherUser.setId(2L);
+        otherUser.setName("OtherName");
+        otherUser.setEmail("other@mail.com");
+
+        request = new ItemRequest();
+        request.setId(10L);
+
+        item = new Item();
+        item.setId(100L);
+        item.setName("ItemName");
+        item.setDescription("ItemDescription");
+        item.setAvailable(true);
+        item.setOwner(user);
+        item.setRequest(request);
+
+        itemDto = new ItemDto(100L, "ItemName", "ItemDescription", true, request.getId());
+
+        comment = new Comment();
+        comment.setId(1000L);
+        comment.setText("CommentText");
+        comment.setAuthor(user);
+        comment.setItem(item);
+        comment.setCreated(LocalDateTime.now());
+
+        commentDto = new CommentDto(comment.getId(), comment.getText(), user.getName(), comment.getCreated());
+
+        pastBooking = new Booking();
+        pastBooking.setId(200L);
+        pastBooking.setItem(item);
+        pastBooking.setBooker(user);
+        pastBooking.setStatus(Statuses.APPROVED);
+        pastBooking.setStart(LocalDateTime.now().minusDays(2));
+        pastBooking.setEnd(LocalDateTime.now().minusDays(1));
+
+        futureBooking = new Booking();
+        futureBooking.setId(300L);
+        futureBooking.setItem(item);
+        futureBooking.setBooker(user);
+        futureBooking.setStatus(Statuses.APPROVED);
+        futureBooking.setStart(LocalDateTime.now().plusDays(1));
+        futureBooking.setEnd(LocalDateTime.now().plusDays(2));
+    }
 
     @Test
-    void testAddCommentWhenCommentIsEmpty() {
-        NewCommentRequest newComment = new NewCommentRequest("comment", 1L, 1L);
+    void addItem_whenUserNotFound_throwNotFoundException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // user
-        NewUserRequest newUser = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+        NotFoundException thrown = assertThrows(NotFoundException.class, () -> {
+            itemService.addItem(1L, itemDto);
+        });
 
-        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
+        assertEquals("Пользователь с ID 1 не найден", thrown.getMessage());
+    }
 
-        UserDto userDto = userService.create(newUser);
-        User user = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+    @Test
+    void addItem_whenRequestNotFound_throwNoSuchElementException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        // requestId = 10L, но request не найден
+        when(itemRequestRepository.findById(10L)).thenReturn(Optional.empty());
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        NoSuchElementException thrown = assertThrows(NoSuchElementException.class, () -> {
+            itemService.addItem(1L, itemDto);
+        });
 
-        // item
-        NewItemRequest newItem = new NewItemRequest("name", "description", Boolean.TRUE, 1L, 1L);
-        Item item = new Item(1L, "name", "description", Boolean.TRUE, user, 1L);
-        when(itemRepository.save(any())).thenReturn(item);
+        assertEquals("Request not found", thrown.getMessage());
+    }
 
-        ItemDto findItem = itemService.create(1L, newItem);
+    @Test
+    void addItem_success() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(itemRequestRepository.findById(10L)).thenReturn(Optional.of(request));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
 
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        ItemDto created = itemService.addItem(1L, itemDto);
 
-        //check
-        when(bookingRepository.existsByBookerIdAndItemIdAndEndBefore(anyLong(), anyLong(), any())).thenReturn(Boolean.FALSE);
+        assertEquals(itemDto.getId(), created.getId());
+        assertEquals(itemDto.getName(), created.getName());
+        assertEquals(itemDto.getDescription(), created.getDescription());
+        assertEquals(itemDto.getAvailable(), created.getAvailable());
+        assertEquals(itemDto.getRequestId(), created.getRequestId());
+    }
+
+    @Test
+    void updateItem_whenItemNotFound_throwNotFoundException() {
+        when(itemRepository.findById(100L)).thenReturn(Optional.empty());
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () -> {
+            itemService.updateItem(1L, 100L, itemDto);
+        });
+        assertTrue(thrown.getMessage().contains("Вещь c ID 100 не найдена"));
+    }
+
+    @Test
+    void updateItem_whenNotOwner_throwAccessDeniedException() {
+        when(itemRepository.findById(100L)).thenReturn(Optional.of(item));
+        // owner userId=1, пытаемся обновить от имени userId=2
+        AccessDeniedException thrown = assertThrows(AccessDeniedException.class, () -> {
+            itemService.updateItem(2L, 100L, itemDto);
+        });
+        assertEquals("Only owner can update the item", thrown.getMessage());
+    }
+
+    @Test
+    void updateItem_success() {
+        when(itemRepository.findById(100L)).thenReturn(Optional.of(item));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
+
+        ItemDto updated = itemService.updateItem(1L, 100L, itemDto);
+        assertEquals(itemDto.getName(), updated.getName());
+        assertEquals(itemDto.getDescription(), updated.getDescription());
+        assertEquals(itemDto.getAvailable(), updated.getAvailable());
+    }
+
+    @Test
+    void getItemById_whenNotFound_throwNotFoundException() {
+        when(itemRepository.findById(100L)).thenReturn(Optional.empty());
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () -> {
+            itemService.getItemById(100L, 1L);
+        });
+        assertTrue(thrown.getMessage().contains("Вещь c ID 100 не найдена"));
+    }
+
+    @Test
+    void getItemById_whenUserIsOwner_addBookingsInfoAndComments() {
+        when(itemRepository.findById(100L)).thenReturn(Optional.of(item));
+        when(commentRepository.findByItemId(100L)).thenReturn(List.of(comment));
+        when(bookingRepository.findLastBookings(eq(100L), eq(Statuses.APPROVED), any(LocalDateTime.class))).thenReturn(List.of(pastBooking));
+        when(bookingRepository.findNextBookings(eq(100L), eq(Statuses.APPROVED), any(LocalDateTime.class))).thenReturn(List.of(futureBooking));
+
+        ItemDto found = itemService.getItemById(100L, 1L);
+        assertEquals(item.getId(), found.getId());
+        assertFalse(found.getComments().isEmpty());
+        assertNotNull(found.getLastBooking());
+        assertNotNull(found.getNextBooking());
+    }
+
+    @Test
+    void getItemById_whenUserIsNotOwner_noBookingsInfo() {
+        when(itemRepository.findById(100L)).thenReturn(Optional.of(item));
+        when(commentRepository.findByItemId(100L)).thenReturn(List.of(comment));
+
+        ItemDto found = itemService.getItemById(100L, 2L);
+        assertEquals(item.getId(), found.getId());
+        assertFalse(found.getComments().isEmpty());
+        assertNull(found.getLastBooking());
+        assertNull(found.getNextBooking());
+    }
+
+    @Test
+    void getUserItems_success() {
+        when(itemRepository.findByOwnerId(1L)).thenReturn(List.of(item));
+        when(commentRepository.findByItemId(100L)).thenReturn(List.of(comment));
+        when(bookingRepository.findLastBookings(eq(100L), eq(Statuses.APPROVED), any(LocalDateTime.class))).thenReturn(List.of(pastBooking));
+        when(bookingRepository.findNextBookings(eq(100L), eq(Statuses.APPROVED), any(LocalDateTime.class))).thenReturn(List.of(futureBooking));
+
+        List<ItemDto> items = itemService.getUserItems(1L);
+        assertEquals(1, items.size());
+        ItemDto dto = items.get(0);
+        assertEquals(item.getId(), dto.getId());
+        assertFalse(dto.getComments().isEmpty());
+        assertNotNull(dto.getLastBooking());
+        assertNotNull(dto.getNextBooking());
+    }
+
+    @Test
+    void searchItems_whenTextIsBlank_returnEmptyList() {
+        List<ItemDto> found = itemService.searchItems("   ");
+        assertTrue(found.isEmpty());
+
+        found = itemService.searchItems(null);
+        assertTrue(found.isEmpty());
+    }
+
+    @Test
+    void searchItems_success() {
+        when(itemRepository.search("text")).thenReturn(List.of(item));
+        List<ItemDto> found = itemService.searchItems("text");
+        assertEquals(1, found.size());
+        assertEquals(item.getId(), found.get(0).getId());
+    }
+
+    @Test
+    void addComment_whenNoBooking_throwValidationException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(100L)).thenReturn(Optional.of(item));
+        // Нет завершенных бронирований
+        when(bookingRepository.existsByBookerIdAndItemIdAndEndBefore(anyLong(), anyLong(), any(LocalDateTime.class))).thenReturn(false);
+
         ValidationException thrown = assertThrows(ValidationException.class, () -> {
-            itemService.addComment(1L, 1L, newComment);
+            itemService.addComment(1L, 100L, commentDto);
         });
 
-        assertEquals(String.format("Пользователь %s не может оставить комментарий, " +
-                "так как не пользовался вещью %s", user.getName(), item.getName()), thrown.getMessage());
+        assertTrue(thrown.getMessage().contains("не может оставить комментарий"));
     }
 
     @Test
-    void testDeleteItemWithWrongOwnerId() {
-        // user
-        NewUserRequest newUser = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
+    void addComment_success() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(100L)).thenReturn(Optional.of(item));
+        // Есть хотя бы одно завершенное бронирование
+        when(bookingRepository.existsByBookerIdAndItemIdAndEndBefore(eq(1L), eq(100L), any(LocalDateTime.class))).thenReturn(true);
 
-        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
+        Comment savedComment = new Comment(comment.getId(), comment.getText(), item, user, comment.getCreated());
+        when(commentRepository.save(any(Comment.class))).thenReturn(savedComment);
 
-        UserDto userDto = userService.create(newUser);
-        User user = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-
-        // item
-        NewItemRequest newItem = new NewItemRequest("name", "description", Boolean.TRUE, 1L, 1L);
-        Item item = new Item(1L, "name", "description", Boolean.TRUE, user, 1L);
-        when(itemRepository.save(any())).thenReturn(item);
-
-        ItemDto findItem = itemService.create(1L, newItem);
-
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        NotItemOwnerException thrown = assertThrows(NotItemOwnerException.class, () -> {
-            itemService.delete(2L, 1L);
-        });
-
-        assertEquals("Удалить данные вещи может только её владелец", thrown.getMessage());
-    }
-
-    @Test
-    void testUpdateItemWithWrongOwnerId() {
-        // user
-        NewUserRequest newUser = new NewUserRequest("john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3)));
-
-        UserDto userDto = userService.create(newUser);
-        User user = new User(1L, "john.doe@mail.com", "John Doe", LocalDate.of(2022, 7, 3));
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-
-        // item
-        NewItemRequest newItem = new NewItemRequest("name", "description", Boolean.TRUE, 1L, 1L);
-        Item item = new Item(1L, "name", "description", Boolean.TRUE, user, 1L);
-        when(itemRepository.save(any())).thenReturn(item);
-
-        ItemDto findItem = itemService.create(1L, newItem);
-
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        NotItemOwnerException thrown = assertThrows(NotItemOwnerException.class, () -> {
-            itemService.update(1L, null, 2L);
-        });
-
-        assertEquals("Редактировать данные вещи может только её владелец", thrown.getMessage());
-    }
-
-    @Test
-    void testFindItemsForTenantWithBlankText() {
-        Collection<ItemDto> items = itemService.findItemsForTenant(1L, null);
-
-        assertEquals(items, new ArrayList<>());
-    }
-
-    @Test
-    void testFindAllWithWrongOwnerId() {
-        when(itemRepository.findAllByUserId(anyLong())).thenReturn(new ArrayList<>());
-
-        Collection<AdvancedItemDto> items = itemService.findAll(999L);
-
-        assertEquals(items, new ArrayList<>());
+        CommentDto created = itemService.addComment(1L, 100L, commentDto);
+        assertEquals(commentDto.getId(), created.getId());
+        assertEquals(commentDto.getText(), created.getText());
+        assertEquals(commentDto.getAuthorName(), created.getAuthorName());
     }
 }
-*/
