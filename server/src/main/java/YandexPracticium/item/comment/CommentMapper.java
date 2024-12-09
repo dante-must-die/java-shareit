@@ -15,13 +15,12 @@ public class CommentMapper {
         );
     }
 
-    public static Comment mapToComment(User author, Item item, NewCommentRequest request) {
+    public static Comment mapToComment(User author, Item item, CommentDto dto) {
         Comment comment = new Comment();
-        comment.setText(request.getText());
-        comment.setItem(item);
+        comment.setText(dto.getText());
         comment.setAuthor(author);
+        comment.setItem(item);
         comment.setCreated(LocalDateTime.now());
-
         return comment;
     }
 }

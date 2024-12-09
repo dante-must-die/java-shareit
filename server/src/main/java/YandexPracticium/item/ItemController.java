@@ -1,6 +1,5 @@
 package YandexPracticium.item;
 
-import YandexPracticium.item.comment.NewCommentRequest;
 import YandexPracticium.item.dto.ItemDto;
 import YandexPracticium.item.comment.CommentDto;
 import YandexPracticium.item.service.ItemService;
@@ -52,7 +51,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@RequestHeader(USER_HEADER) Long userId,
                                  @PathVariable Long itemId,
-                                 @RequestBody NewCommentRequest commentDto) {
+                                 @RequestBody CommentDto commentDto) {
         return itemService.addComment(userId, itemId, commentDto);
     }
 }

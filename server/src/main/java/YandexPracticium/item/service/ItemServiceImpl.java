@@ -8,7 +8,10 @@ import YandexPracticium.exception.AccessDeniedException;
 import YandexPracticium.exception.NotFoundException;
 import YandexPracticium.exception.ValidationException;
 import YandexPracticium.item.Item;
-import YandexPracticium.item.comment.*;
+import YandexPracticium.item.comment.Comment;
+import YandexPracticium.item.comment.CommentDto;
+import YandexPracticium.item.comment.CommentMapper;
+import YandexPracticium.item.comment.CommentRepository;
 import YandexPracticium.item.dto.ItemDto;
 import YandexPracticium.item.mapper.ItemMapper;
 import YandexPracticium.item.repository.ItemRepository;
@@ -21,10 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Владелец вещи c ID %d не найден", userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с ID %d не найден", userId)));
     }
 
     @Override
@@ -113,11 +114,8 @@ public class ItemServiceImpl implements ItemService {
             List<Booking> lastBookings = bookingRepository.findLastBookings(itemId, Statuses.APPROVED, LocalDateTime.now());
             List<Booking> nextBookings = bookingRepository.findNextBookings(itemId, Statuses.APPROVED, LocalDateTime.now());
 
-            Booking lastBooking = lastBookings.isEmpty() ? null : lastBookings.get(0);
-            Booking nextBooking = nextBookings.isEmpty() ? null : nextBookings.get(0);
-
-            itemDto.setLastBooking(lastBooking != null ? BookingMapper.toBookingDto(lastBooking) : null);
-            itemDto.setNextBooking(nextBooking != null ? BookingMapper.toBookingDto(nextBooking) : null);
+            itemDto.setLastBooking(lastBookings.isEmpty() ? null : BookingMapper.toBookingDto(lastBookings.get(0)));
+            itemDto.setNextBooking(nextBookings.isEmpty() ? null : BookingMapper.toBookingDto(nextBookings.get(0)));
         }
 
         return itemDto;
@@ -141,11 +139,8 @@ public class ItemServiceImpl implements ItemService {
                     List<Booking> lastBookings = bookingRepository.findLastBookings(item.getId(), Statuses.APPROVED, LocalDateTime.now());
                     List<Booking> nextBookings = bookingRepository.findNextBookings(item.getId(), Statuses.APPROVED, LocalDateTime.now());
 
-                    Booking lastBooking = lastBookings.isEmpty() ? null : lastBookings.get(0);
-                    Booking nextBooking = nextBookings.isEmpty() ? null : nextBookings.get(0);
-
-                    itemDto.setLastBooking(lastBooking != null ? BookingMapper.toBookingDto(lastBooking) : null);
-                    itemDto.setNextBooking(nextBooking != null ? BookingMapper.toBookingDto(nextBooking) : null);
+                    itemDto.setLastBooking(lastBookings.isEmpty() ? null : BookingMapper.toBookingDto(lastBookings.get(0)));
+                    itemDto.setNextBooking(nextBookings.isEmpty() ? null : BookingMapper.toBookingDto(nextBookings.get(0)));
 
                     return itemDto;
                 })
@@ -165,18 +160,18 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public CommentDto addComment(Long itemId, Long userId, NewCommentRequest request) {
-
+    public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         User findUser = findUserById(userId);
         Item findItem = findById(itemId);
 
-        LocalDateTime current = LocalDateTime.now();
-        if (!bookingRepository.existsByBookerIdAndItemIdAndEndBefore(userId, itemId, current)) {
+        LocalDateTime now = LocalDateTime.now().plusHours(5);
+        boolean canComment = bookingRepository.existsByBookerIdAndItemIdAndEndBefore(userId, itemId, now);
+        if (!canComment) {
             throw new ValidationException(String.format("Пользователь %s не может оставить комментарий, " +
                     "так как не пользовался вещью %s", findUser.getName(), findItem.getName()));
         }
 
-        Comment comment = CommentMapper.mapToComment(findUser, findItem, request);
+        Comment comment = CommentMapper.mapToComment(findUser, findItem, commentDto);
         comment = commentRepository.save(comment);
 
         return CommentMapper.toCommentDto(comment);
