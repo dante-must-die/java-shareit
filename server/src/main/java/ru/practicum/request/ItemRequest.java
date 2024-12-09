@@ -20,15 +20,15 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String description;
 
     @ManyToOne
-    @JoinColumn(name="requester_id", nullable=false)
+    @JoinColumn(name = "requester_id", nullable = false)
     private User requester;
 
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private LocalDateTime created;
 
     @PrePersist
