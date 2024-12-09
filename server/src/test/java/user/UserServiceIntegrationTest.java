@@ -1,10 +1,9 @@
 package user;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.user.User;
-import YandexPracticium.user.dto.UserDto;
-import YandexPracticium.user.dto.UserDto;
-import YandexPracticium.user.service.UserService;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.user.User;
+import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.service.UserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;

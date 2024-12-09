@@ -1,12 +1,12 @@
 package request;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.item.dto.ItemDto;
-import YandexPracticium.request.ItemRequestController;
-import YandexPracticium.request.dto.ItemRequestDto;
-import YandexPracticium.request.dto.NewRequest;
-import YandexPracticium.request.dto.UpdateRequest;
-import YandexPracticium.request.service.ItemRequestService;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.item.dto.ItemDto;
+import ru.practicum.request.ItemRequestController;
+import ru.practicum.request.dto.ItemRequestDto;
+import ru.practicum.request.dto.NewRequest;
+import ru.practicum.request.dto.UpdateRequest;
+import ru.practicum.request.service.ItemRequestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,17 +1,17 @@
 package booking;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.booking.Booking;
-import YandexPracticium.booking.dto.BookingDto;
-import YandexPracticium.booking.dto.NewBookingRequest;
-import YandexPracticium.booking.dto.UpdateBookingRequest;
-import YandexPracticium.booking.mapper.BookingMapper;
-import YandexPracticium.enums.Statuses;
-import YandexPracticium.item.Item;
-import YandexPracticium.item.dto.ItemDto;
-import YandexPracticium.request.ItemRequest;
-import YandexPracticium.user.User;
-import YandexPracticium.user.dto.UserDto;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.booking.Booking;
+import ru.practicum.booking.dto.BookingDto;
+import ru.practicum.booking.dto.NewBookingRequest;
+import ru.practicum.booking.dto.UpdateBookingRequest;
+import ru.practicum.booking.mapper.BookingMapper;
+import ru.practicum.enums.Statuses;
+import ru.practicum.item.Item;
+import ru.practicum.item.dto.ItemDto;
+import ru.practicum.request.ItemRequest;
+import ru.practicum.user.User;
+import ru.practicum.user.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ContextConfiguration;
 

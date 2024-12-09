@@ -1,13 +1,12 @@
 package item;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.item.dto.ItemDto;
-import YandexPracticium.item.service.ItemService;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.item.dto.ItemDto;
+import ru.practicum.item.service.ItemService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

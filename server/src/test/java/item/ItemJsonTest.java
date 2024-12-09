@@ -1,8 +1,8 @@
 package item;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.item.comment.CommentDto;
-import YandexPracticium.item.dto.ItemDto;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.item.comment.CommentDto;
+import ru.practicum.item.dto.ItemDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;

@@ -1,12 +1,12 @@
 package request;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.exception.ValidationException;
-import YandexPracticium.request.ItemRequestRepository;
-import YandexPracticium.request.dto.UpdateRequest;
-import YandexPracticium.request.service.ItemRequestServiceImpl;
-import YandexPracticium.user.User;
-import YandexPracticium.user.repository.UserRepository;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.exception.ValidationException;
+import ru.practicum.request.ItemRequestRepository;
+import ru.practicum.request.dto.UpdateRequest;
+import ru.practicum.request.service.ItemRequestServiceImpl;
+import ru.practicum.user.User;
+import ru.practicum.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

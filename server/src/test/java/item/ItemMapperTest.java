@@ -1,9 +1,9 @@
 package item;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.item.Item;
-import YandexPracticium.item.dto.ItemDto;
-import YandexPracticium.item.mapper.ItemMapper;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.item.Item;
+import ru.practicum.item.dto.ItemDto;
+import ru.practicum.item.mapper.ItemMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ContextConfiguration;
 

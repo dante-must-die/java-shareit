@@ -1,9 +1,9 @@
 package user;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.user.UserController;
-import YandexPracticium.user.dto.UserDto;
-import YandexPracticium.user.service.UserService;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.user.UserController;
+import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,10 @@
 package booking;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.booking.dto.BookingDto;
-import YandexPracticium.enums.Statuses;
-import YandexPracticium.item.dto.ItemDto;
-import YandexPracticium.user.dto.UserDto;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.booking.dto.BookingDto;
+import ru.practicum.enums.Statuses;
+import ru.practicum.item.dto.ItemDto;
+import ru.practicum.user.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;

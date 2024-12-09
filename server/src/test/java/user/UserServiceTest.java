@@ -1,12 +1,10 @@
 package user;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.exception.EmailAlreadyExistsException;
-import YandexPracticium.exception.NotFoundException;
-import YandexPracticium.exception.ValidationException;
-import YandexPracticium.user.dto.UserDto;
-import YandexPracticium.user.repository.UserRepository;
-import YandexPracticium.user.service.UserServiceImpl;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.exception.EmailAlreadyExistsException;
+import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.repository.UserRepository;
+import ru.practicum.user.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

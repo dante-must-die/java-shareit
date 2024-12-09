@@ -1,7 +1,7 @@
 package user;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.user.dto.UserDto;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.user.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;

@@ -1,11 +1,11 @@
 package request;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.request.ItemRequest;
-import YandexPracticium.request.dto.ItemRequestDto;
-import YandexPracticium.request.dto.NewRequest;
-import YandexPracticium.request.dto.UpdateRequest;
-import YandexPracticium.request.service.ItemRequestService;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.request.ItemRequest;
+import ru.practicum.request.dto.ItemRequestDto;
+import ru.practicum.request.dto.NewRequest;
+import ru.practicum.request.dto.UpdateRequest;
+import ru.practicum.request.service.ItemRequestService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;

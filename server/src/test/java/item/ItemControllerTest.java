@@ -1,10 +1,10 @@
 package item;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.item.ItemController;
-import YandexPracticium.item.comment.CommentDto;
-import YandexPracticium.item.dto.ItemDto;
-import YandexPracticium.item.service.ItemService;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.item.ItemController;
+import ru.practicum.item.comment.CommentDto;
+import ru.practicum.item.dto.ItemDto;
+import ru.practicum.item.service.ItemService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

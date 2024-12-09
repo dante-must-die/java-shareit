@@ -1,9 +1,9 @@
 package user;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.user.User;
-import YandexPracticium.user.dto.UserDto;
-import YandexPracticium.user.mapper.UserMapper;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.user.User;
+import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ContextConfiguration;
 

@@ -1,15 +1,15 @@
 package request;
 
-import YandexPracticium.ShareItServerApplication;
-import YandexPracticium.item.Item;
-import YandexPracticium.item.dto.ItemDto;
-import YandexPracticium.item.mapper.ItemMapper;
-import YandexPracticium.request.ItemRequest;
-import YandexPracticium.request.dto.ItemRequestDto;
-import YandexPracticium.request.dto.NewRequest;
-import YandexPracticium.request.dto.UpdateRequest;
-import YandexPracticium.request.mapper.ItemRequestMapper;
-import YandexPracticium.user.User;
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.item.Item;
+import ru.practicum.item.dto.ItemDto;
+import ru.practicum.item.mapper.ItemMapper;
+import ru.practicum.request.ItemRequest;
+import ru.practicum.request.dto.ItemRequestDto;
+import ru.practicum.request.dto.NewRequest;
+import ru.practicum.request.dto.UpdateRequest;
+import ru.practicum.request.mapper.ItemRequestMapper;
+import ru.practicum.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ContextConfiguration;
 
