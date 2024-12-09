@@ -107,9 +107,16 @@ class ItemRequestServiceIntegrationTest {
         }
     }
 
-    /*@Test
+    @Test
     void testFindAllOfAnotherRequestors() {
-        createUserInDb();
+        createUserInDb(); // Создаёт пользователя с ID=1
+
+        // Создаём второго пользователя, чтобы findAllOfAnotherRequestors(2L) не выкинул исключение
+        Query userQuery2 = em.createNativeQuery("INSERT INTO USERS (id, name, email) VALUES (:id , :name , :email);");
+        userQuery2.setParameter("id", "2");
+        userQuery2.setParameter("name", "Petr Petrov");
+        userQuery2.setParameter("email", "petr@email");
+        userQuery2.executeUpdate();
 
         List<NewRequest> itemRequests = List.of(
                 new NewRequest("description1", 1L),
@@ -121,6 +128,7 @@ class ItemRequestServiceIntegrationTest {
             itemRequestService.create(1L, ir);
         }
 
+        // Теперь пользователь с ID=2 существует, и сервис не выбросит NotFoundException
         Collection<ItemRequestDto> loadRequests = itemRequestService.findAllOfAnotherRequestors(2L);
 
         MatcherAssert.assertThat(loadRequests, hasSize(itemRequests.size()));
@@ -132,7 +140,8 @@ class ItemRequestServiceIntegrationTest {
                     hasProperty("items", equalTo(new ArrayList<>()))
             )));
         }
-    }*/
+    }
+
 
     @Test
     void updateItemRequestTest() {

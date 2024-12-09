@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 @ContextConfiguration(classes = ShareItServerApplication.class)
 @WebMvcTest(controllers = ItemRequestController.class)
@@ -154,11 +157,11 @@ class ItemRequestControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(requestDto)));
     }
 
-    /*@Test
+    @Test
     void deleteTest() throws Exception {
         mvc.perform(delete(urlTemplate + "/1"))
                 .andExpect(status().isOk());
 
         verify(itemRequestService, times(1)).delete(1L);
-    }*/
+    }
 }
