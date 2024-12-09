@@ -164,7 +164,7 @@ public class ItemServiceImpl implements ItemService {
         User findUser = findUserById(userId);
         Item findItem = findById(itemId);
 
-        LocalDateTime now = LocalDateTime.now().plusHours(5);
+        LocalDateTime now = LocalDateTime.now();//.plusHours(5);
         boolean canComment = bookingRepository.existsByBookerIdAndItemIdAndEndBefore(userId, itemId, now);
         if (!canComment) {
             throw new ValidationException(String.format("Пользователь %s не может оставить комментарий, " +
