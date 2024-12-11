@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Контроллер для управления предметами.
+ */
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-    private final ItemClient itemClient;
     private static final String USER_HEADER = "X-Sharer-User-Id";
+    private final ItemClient itemClient;
 
     @Autowired
     public ItemController(ItemClient itemClient) {

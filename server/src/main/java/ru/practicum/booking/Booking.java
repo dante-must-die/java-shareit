@@ -5,9 +5,12 @@ import ru.practicum.item.Item;
 import ru.practicum.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
+
 import java.time.LocalDateTime;
 
+/**
+ * Сущность бронирования.
+ */
 @Getter
 @Setter
 @ToString
@@ -16,29 +19,28 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = {"id"})
 @Entity
 @Table(name = "bookings")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "start_date")
-    LocalDateTime start;
+    private LocalDateTime start;
 
     @Column(name = "end_date")
-    LocalDateTime end;
+    private LocalDateTime end;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "item_id")
-    Item item;
+    private Item item;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    Statuses status;
+    private Statuses status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "booker_id")
-    User booker;
+    private User booker;
 }

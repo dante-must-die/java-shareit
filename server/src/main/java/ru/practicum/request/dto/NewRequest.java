@@ -1,17 +1,17 @@
 package ru.practicum.request.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
+/**
+ * DTO для создания нового запроса на предмет.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewRequest {
-    String description;
+    private String description;
 
-    Long requestorId;
+    private Long requestorId;
 }

@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер для управления предметами.
+ */
 @RestController
 @RequestMapping("/items")
 public class ItemController {
 
-    private final ItemService itemService;
     private static final String USER_HEADER = "X-Sharer-User-Id";
+    private final ItemService itemService;
 
     @Autowired
     public ItemController(ItemService itemService) {

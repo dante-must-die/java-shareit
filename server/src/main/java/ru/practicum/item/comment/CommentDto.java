@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-
+/**
+ * DTO для передачи данных комментария.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

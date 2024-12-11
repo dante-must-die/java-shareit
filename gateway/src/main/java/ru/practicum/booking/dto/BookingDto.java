@@ -1,6 +1,6 @@
 package ru.practicum.booking.dto;
 
-import ru.practicum.booking.Status;
+import ru.practicum.booking.BookingStatus;
 import ru.practicum.item.dto.ItemDto;
 import ru.practicum.user.dto.UserDto;
 
@@ -12,6 +12,9 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
+/**
+ * Объект передачи данных для информации о бронировании.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,5 +36,5 @@ public class BookingDto {
 
     private UserDto booker;
 
-    private Status status;
+    private BookingStatus status;
 }

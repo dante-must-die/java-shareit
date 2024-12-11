@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Контроллер для управления бронированиями.
+ */
 @RestController
 @RequestMapping("/bookings")
 public class BookingController {
-    private final BookingClient bookingClient;
     private static final String USER_HEADER = "X-Sharer-User-Id";
+    private final BookingClient bookingClient;
 
     @Autowired
     public BookingController(BookingClient bookingClient) {

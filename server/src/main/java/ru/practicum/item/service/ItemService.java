@@ -5,6 +5,9 @@ import ru.practicum.item.dto.ItemDto;
 
 import java.util.List;
 
+/**
+ * Интерфейс сервиса для управления предметами.
+ */
 public interface ItemService {
     ItemDto addItem(Long userId, ItemDto itemDto);
 

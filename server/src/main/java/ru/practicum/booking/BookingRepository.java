@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Репозиторий для управления бронированиями.
+ */
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     Collection<Booking> findAllByBookerId(Long bookerId);

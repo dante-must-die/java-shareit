@@ -16,8 +16,6 @@ import ru.practicum.item.Item;
 import ru.practicum.item.repository.ItemRepository;
 import ru.practicum.user.User;
 import ru.practicum.user.repository.UserRepository;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,13 +26,15 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
+/**
+ * Реализация сервиса для управления бронированиями.
+ */
 @Slf4j
 @Service
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BookingServiceImpl implements BookingService {
-    BookingRepository repository;
-    UserRepository userRepository;
-    ItemRepository itemRepository;
+    private final BookingRepository repository;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Autowired
     public BookingServiceImpl(BookingRepository repository, UserRepository userRepository, ItemRepository itemRepository) {

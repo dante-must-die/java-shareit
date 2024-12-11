@@ -13,7 +13,9 @@ import ru.practicum.user.mapper.UserMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-
+/**
+ * Маппер для преобразования между сущностью Booking и DTO.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookingMapper {
 

@@ -12,12 +12,26 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+/**
+ * Базовый клиент для выполнения HTTP-запросов к серверу ShareIt.
+ */
 public class BaseClient {
     protected final RestTemplate rest;
 
     public BaseClient(String serverUrl, RestTemplate rest) {
         this.rest = rest;
         rest.setUriTemplateHandler(new DefaultUriBuilderFactory(serverUrl));
+    }
+
+    private static ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return response;
+        }
+        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
+        if (response.hasBody()) {
+            return responseBuilder.body(response.getBody());
+        }
+        return responseBuilder.build();
     }
 
     protected ResponseEntity<Object> get(String path) {
@@ -105,16 +119,5 @@ public class BaseClient {
             headers.set("X-Sharer-User-Id", userId.toString());
         }
         return headers;
-    }
-
-    private static ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response;
-        }
-        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
-        if (response.hasBody()) {
-            return responseBuilder.body(response.getBody());
-        }
-        return responseBuilder.build();
     }
 }

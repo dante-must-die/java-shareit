@@ -1,20 +1,20 @@
 package ru.practicum.booking.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+/**
+ * Запрос для создания нового бронирования.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewBookingRequest {
-    LocalDateTime start;
-    LocalDateTime end;
-    Long itemId;
-    Long bookerId;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private Long itemId;
+    private Long bookerId;
 }

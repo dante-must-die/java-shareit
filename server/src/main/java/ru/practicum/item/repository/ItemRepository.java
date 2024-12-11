@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
+/**
+ * Репозиторий для управления предметами.
+ */
 public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByOwnerId(Long ownerId);
 

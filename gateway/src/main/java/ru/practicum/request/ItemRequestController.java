@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Контроллер для управления запросами на предметы.
+ */
 @RestController
 @RequestMapping("/requests")
 public class ItemRequestController {
-    private final ItemRequestClient itemRequestClient;
     private static final String USER_HEADER = "X-Sharer-User-Id";
+    private final ItemRequestClient itemRequestClient;
 
     @Autowired
     public ItemRequestController(ItemRequestClient itemRequestClient) {

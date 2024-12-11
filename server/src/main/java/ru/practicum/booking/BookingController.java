@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
-
+/**
+ * Контроллер для управления бронированиями.
+ */
 @Slf4j
 @RequiredArgsConstructor
 @RestController

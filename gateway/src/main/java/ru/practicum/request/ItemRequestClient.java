@@ -8,6 +8,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+/**
+ * Клиент для взаимодействия с сервисом запросов на предметы.
+ */
 @Component
 public class ItemRequestClient extends BaseClient {
     private static final String API_PREFIX = "/requests";

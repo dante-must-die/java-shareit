@@ -2,19 +2,19 @@ package ru.practicum.item.comment;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
 
+/**
+ * Запрос для создания нового комментария.
+ */
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewCommentRequest {
     @NotBlank(message = "Комментарий не может быть пустым")
-    String text;
+    private String text;
 
     @Positive(message = "ID предмета на который пишут комментарий не может быть отрицательным числом")
-    Long itemId;
+    private Long itemId;
 
     @Positive(message = "ID пользователя который который пишет комментарий не может быть отрицательным числом")
-    Long authorId;
+    private Long authorId;
 }

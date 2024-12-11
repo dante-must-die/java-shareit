@@ -2,22 +2,22 @@ package ru.practicum.user.dto;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
+/**
+ * Запрос для обновления информации о пользователе.
+ */
 @Data
 @EqualsAndHashCode(of = {"id"})
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateUserRequest {
-    Long id;
-    String email;
-    String name;
+    private Long id;
+    private String email;
+    private String name;
     @PastOrPresent(message = "Дата рождения не может быть больше текущего дня")
-    LocalDate birthday;
+    private LocalDate birthday;
 
     public boolean hasEmail() {
         return !StringUtils.isBlank(this.email);

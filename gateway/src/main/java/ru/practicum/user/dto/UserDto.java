@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для класса User
+ * Объект передачи данных для пользователя.
  */
 @Data
 @NoArgsConstructor

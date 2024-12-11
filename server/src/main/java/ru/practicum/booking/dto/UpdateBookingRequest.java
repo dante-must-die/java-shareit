@@ -2,22 +2,23 @@ package ru.practicum.booking.dto;
 
 import ru.practicum.enums.Statuses;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+/**
+ * Запрос для обновления существующего бронирования.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateBookingRequest {
-    Long id;
-    LocalDateTime start;
-    LocalDateTime end;
-    Long itemId;
-    Statuses status;
-    Long bookerId;
+    private Long id;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private Long itemId;
+    private Statuses status;
+    private Long bookerId;
 
     public boolean hasStart() {
         return this.start != null;

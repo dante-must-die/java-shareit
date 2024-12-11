@@ -6,6 +6,9 @@ import ru.practicum.booking.dto.UpdateBookingRequest;
 
 import java.util.Collection;
 
+/**
+ * Сервис для управления бронированиями.
+ */
 public interface BookingService {
     BookingDto create(Long userId, NewBookingRequest request);
 

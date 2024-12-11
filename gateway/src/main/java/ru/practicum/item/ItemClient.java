@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 
+/**
+ * Клиент для взаимодействия с сервисом предметов.
+ */
 @Component
 public class ItemClient extends BaseClient {
     private static final String API_PREFIX = "/items";

@@ -10,7 +10,15 @@ import ru.practicum.user.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Маппер для преобразования между сущностью ItemRequest и DTO.
+ */
 public class ItemRequestMapper {
+
+    private ItemRequestMapper() {
+
+    }
+
     public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest, List<ItemDto> items) {
         if (itemRequest == null) return null;
         return new ItemRequestDto(

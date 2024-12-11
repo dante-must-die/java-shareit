@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
 
+/**
+ * Клиент для взаимодействия с сервисом бронирований.
+ */
 @Component
 public class BookingClient extends BaseClient {
     private static final String API_PREFIX = "/bookings";

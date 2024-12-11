@@ -6,6 +6,9 @@ import ru.practicum.request.dto.UpdateRequest;
 
 import java.util.Collection;
 
+/**
+ * Сервис для управления запросами на предметы.
+ */
 public interface ItemRequestService {
     ItemRequestDto create(Long userId, NewRequest request);
 

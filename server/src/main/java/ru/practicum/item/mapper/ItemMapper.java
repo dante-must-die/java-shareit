@@ -3,6 +3,9 @@ package ru.practicum.item.mapper;
 import ru.practicum.item.Item;
 import ru.practicum.item.dto.ItemDto;
 
+/**
+ * Маппер для преобразования между сущностью Item и DTO.
+ */
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
         ItemDto itemDto = new ItemDto(

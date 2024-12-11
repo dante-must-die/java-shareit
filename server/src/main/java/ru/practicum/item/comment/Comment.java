@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * Сущность комментария к предмету.
+ */
 @Entity
 @Table(name = "comments")
 @Data

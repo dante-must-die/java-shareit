@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
+/**
+ * Контроллер для управления пользователями.
+ */
 @RestController
 @RequestMapping("/users")
 public class UserController {

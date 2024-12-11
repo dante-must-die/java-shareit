@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * Объект передачи данных для запроса на предмет.
+ */
 @Data
 public class ItemRequestDto {
     private Long id;

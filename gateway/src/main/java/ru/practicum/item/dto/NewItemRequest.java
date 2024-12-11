@@ -3,27 +3,27 @@ package ru.practicum.item.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
 
+/**
+ * Запрос для создания нового предмета.
+ */
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewItemRequest {
     @NotBlank(message = "Название вещи не должно быть пустым")
-    String name;
+    private String name;
 
     @NotBlank(message = "Описание вещи не должно быть пустым")
-    String description;
+    private String description;
 
     @NotNull(message = "Статус вещи не может быть пустым. Укажите занята вещь или свободна")
-    Boolean available;
+    private Boolean available;
 
     @Positive(message = "ID владельца вещи не может быть отрицательным числом")
-    Long ownerId;
+    private Long ownerId;
 
     @Positive(message = "ID запроса на создание вещи не может быть отрицательным числом")
-    Long requestId;
+    private Long requestId;
 
     public boolean hasRequestId() {
         return requestId != null;

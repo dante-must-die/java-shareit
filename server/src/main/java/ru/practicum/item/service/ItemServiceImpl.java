@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+/**
+ * Реализация сервиса для управления предметами.
+ */
 @Service
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;

@@ -14,9 +14,7 @@ import ru.practicum.request.dto.UpdateRequest;
 import ru.practicum.request.mapper.ItemRequestMapper;
 import ru.practicum.user.User;
 import ru.practicum.user.repository.UserRepository;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,14 +23,16 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Реализация сервиса для управления запросами на предметы.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ItemRequestServiceImpl implements ItemRequestService {
-    ItemRequestRepository repository;
-    UserRepository userRepository;
-    ItemRepository itemRepository;
+    private final ItemRequestRepository repository;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     @Transactional

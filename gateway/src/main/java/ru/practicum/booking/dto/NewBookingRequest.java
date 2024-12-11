@@ -2,24 +2,24 @@ package ru.practicum.booking.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+/**
+ * DTO для создания нового запроса на бронирование.
+ */
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewBookingRequest {
 
-    LocalDateTime start;
+    private LocalDateTime start;
 
-    LocalDateTime end;
+    private LocalDateTime end;
 
     @NotNull(message = "У искомой вещи должен быть ID")
     @Positive(message = "ID вещи не может быть отрицательным числом")
-    Long itemId;
+    private Long itemId;
 
     @Positive(message = "ID пользователя который хочет забронировать вещь не может быть отрицательным числом")
-    Long bookerId;
+    private Long bookerId;
 }

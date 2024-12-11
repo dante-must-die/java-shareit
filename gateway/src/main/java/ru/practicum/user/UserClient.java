@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Клиент для взаимодействия с сервисом пользователей.
+ */
 @Component
 public class UserClient extends BaseClient {
     private static final String API_PREFIX = "/users";

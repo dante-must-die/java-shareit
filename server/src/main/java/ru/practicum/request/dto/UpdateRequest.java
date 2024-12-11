@@ -1,18 +1,19 @@
 package ru.practicum.request.dto;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+/**
+ * DTO для обновления существующего запроса на предмет.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateRequest {
-    Long id;
-    String description;
-    Long requestorId; // userId
-    LocalDateTime created;
+    private Long id;
+    private String description;
+    private Long requestorId; // userId
+    private LocalDateTime created;
 }

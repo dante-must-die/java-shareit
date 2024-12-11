@@ -2,6 +2,10 @@ package ru.practicum.enums;
 
 import java.util.Optional;
 
+/**
+ * Статусы для бронирования
+ */
+
 public enum States {
     ALL,
     CURRENT,

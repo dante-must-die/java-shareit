@@ -9,6 +9,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Сущность запроса на предмет.
+ */
 @Entity
 @Table(name = "requests")
 @Getter
