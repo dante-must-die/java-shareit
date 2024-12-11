@@ -1,0 +1,51 @@
+package user;
+
+import ru.practicum.ShareItServerApplication;
+import ru.practicum.exception.EmailAlreadyExistsException;
+import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.repository.UserRepository;
+import ru.practicum.user.service.UserServiceImpl;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ContextConfiguration;
+
+
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ContextConfiguration(classes = ShareItServerApplication.class)
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
+    private UserServiceImpl userService;
+
+    @Test
+    void testUserByIdWhenUserIdNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        NoSuchElementException thrown = assertThrows(NoSuchElementException.class, () -> userService.getUserEntityById(2L));
+        assertTrue(thrown.getMessage().contains("User not found"));
+    }
+
+    @Test
+    void testCreateUserWhenEmailExist() {
+        UserDto newUser = new UserDto(null, "John Doe", "john.doe@mail.com");
+        when(userRepository.existsByEmail(newUser.getEmail())).thenReturn(true);
+
+        EmailAlreadyExistsException thrown = assertThrows(EmailAlreadyExistsException.class, () -> {
+            userService.addUser(newUser);
+        });
+
+        assertEquals("Email already exists", thrown.getMessage());
+    }
+
+}
